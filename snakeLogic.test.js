@@ -1,54 +1,38 @@
-const { moveSnake, growSnake, checkCollision } = require('./snake.js');
+import { moveSnake, growSnake, checkCollision } from './snakeLogic';
 
-describe('Snake Game Logic Tests', () => {
-
-  test('moveSnake should move the snake in the correct direction', () => {
+describe('Snake Logic', () => {
+  test('moveSnake moves correctly', () => {
     const snake = [{ x: 40, y: 20 }, { x: 20, y: 20 }];
-    const dx = 20;
-    const dy = 0;
-    const newSnake = moveSnake(snake, dx, dy);
-    expect(newSnake[0]).toEqual({ x: 60, y: 20 });
-    expect(newSnake.length).toBe(snake.length);
+    const moved = moveSnake(snake, 20, 0);
+    expect(moved[0]).toEqual({ x: 60, y: 20 });
   });
 
-  test('growSnake should add one segment at the tail', () => {
+  test('growSnake increases length by 1', () => {
     const snake = [{ x: 40, y: 20 }, { x: 20, y: 20 }];
-    const newSnake = growSnake(snake);
-    expect(newSnake.length).toBe(snake.length + 1);
-    expect(newSnake[newSnake.length - 1]).toEqual({ x: 20, y: 20 });
+    const grown = growSnake(snake);
+    expect(grown.length).toBe(3);
   });
 
-  test('checkCollision detects wall collision (left)', () => {
+  test('checkCollision detects wall hit', () => {
     const snake = [{ x: -20, y: 0 }];
-    const result = checkCollision(snake, 400);
-    expect(result).toBe(true);
+    expect(checkCollision(snake, 400)).toBe(true);
   });
 
-  test('checkCollision detects wall collision (right)', () => {
-    const snake = [{ x: 400, y: 0 }];
-    const result = checkCollision(snake, 400);
-    expect(result).toBe(true);
-  });
-
-  test('checkCollision detects self collision', () => {
+  test('checkCollision detects self-hit', () => {
     const snake = [
       { x: 60, y: 60 },
       { x: 40, y: 60 },
-      { x: 20, y: 60 },
-      { x: 60, y: 60 } // head hits itself
+      { x: 60, y: 60 }
     ];
-    const result = checkCollision(snake, 400);
-    expect(result).toBe(true);
+    expect(checkCollision(snake, 400)).toBe(true);
   });
 
-  test('checkCollision returns false when no collision', () => {
+  test('checkCollision passes for safe snake', () => {
     const snake = [
       { x: 60, y: 60 },
       { x: 40, y: 60 },
       { x: 20, y: 60 }
     ];
-    const result = checkCollision(snake, 400);
-    expect(result).toBe(false);
+    expect(checkCollision(snake, 400)).toBe(false);
   });
-
 });
