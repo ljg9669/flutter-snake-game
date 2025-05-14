@@ -1,4 +1,4 @@
-import { moveSnake, growSnake, checkCollision } from './snakeLogic';
+const { moveSnake, growSnake, checkCollision } = require('./snakeLogic');
 
 describe('Snake Logic', () => {
   test('moveSnake moves correctly', () => {
