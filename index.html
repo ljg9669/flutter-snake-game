@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flutter Snake Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1 id="title">FLUTTER STRIKE: The Branded Snake Showdown</h1>
+  <button id="startBtn">Start Game</button>
+  <div id="score" style="display: none;">Score: 0</div>
+  <canvas id="gameCanvas" style="display: none;"></canvas>
+
+  <div id="controls" style="display: none;">
+    <button class="ctrl" data-dir="up">⬆️</button><br>
+    <button class="ctrl" data-dir="left">⬅️</button>
+    <button class="ctrl" data-dir="down">⬇️</button>
+    <button class="ctrl" data-dir="right">➡️</button>
+  </div>
+
+  <script src="snake.js"></script>
+</body>
+</html>
