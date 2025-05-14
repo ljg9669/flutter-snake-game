@@ -1,14 +1,10 @@
-// Flutter Snake Game with Mobile Controls and Desktop Enhancements
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Desktop-optimized canvas
-let canvasSize = window.innerWidth > 768 ? 500 : Math.min(window.innerWidth, 400);
+let canvasSize = Math.min(window.innerWidth, 500);
 canvas.width = canvas.height = canvasSize;
 
-const gridSize = Math.floor(canvasSize / 15);
-
+const gridSize = Math.floor(canvasSize / 20);
 let snake = [{ x: 5 * gridSize, y: 10 * gridSize }];
 let food = { x: 0, y: 0 };
 let dx = gridSize;
@@ -73,27 +69,45 @@ function drawGame() {
   document.getElementById("score").innerText = `Score: ${score}`;
 }
 
-function moveSnake() {
+// ✅ Logic used in game AND testable
+function moveSnake(snake, dx, dy) {
   const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+  return [head, ...snake.slice(0, -1)];
+}
 
-  if (
-    head.x < 0 || head.x >= canvasSize ||
-    head.y < 0 || head.y >= canvasSize ||
-    snake.some(segment => segment.x === head.x && segment.y === head.y)
-  ) {
-    clearInterval(gameInterval);
-    alert("Game Over! Press OK to return to menu.");
-    endGame();
+function growSnake(snake) {
+  const tail = snake[snake.length - 1];
+  return [...snake, { ...tail }];
+}
+
+function checkCollision(snake, canvasSize) {
+  const head = snake[0];
+  const hitWall = head.x < 0 || head.x >= canvasSize || head.y < 0 || head.y >= canvasSize;
+  const hitSelf = snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
+  return hitWall || hitSelf;
+}
+
+function gameOver() {
+  clearInterval(gameInterval);
+  alert("Game Over! Press OK to restart.");
+  document.getElementById("startBtn").style.display = "inline-block";
+  document.getElementById("score").style.display = "none";
+  document.getElementById("gameCanvas").style.display = "none";
+  document.getElementById("controls").style.display = "none";
+}
+
+function stepGame() {
+  snake = moveSnake(snake, dx, dy);
+
+  if (checkCollision(snake, canvasSize)) {
+    gameOver();
     return;
   }
 
-  snake.unshift(head);
-
-  if (head.x === food.x && head.y === food.y) {
+  if (snake[0].x === food.x && snake[0].y === food.y) {
     score++;
+    snake = growSnake(snake);
     placeFood();
-  } else {
-    snake.pop();
   }
 
   drawGame();
@@ -117,14 +131,7 @@ function startGame() {
   score = 0;
   placeFood();
   drawGame();
-  gameInterval = setInterval(moveSnake, 150);
-}
-
-function endGame() {
-  document.getElementById("score").style.display = "none";
-  document.getElementById("gameCanvas").style.display = "none";
-  document.getElementById("controls").style.display = "none";
-  document.getElementById("startBtn").style.display = "inline-block";
+  gameInterval = setInterval(stepGame, 150);
 }
 
 document.getElementById("startBtn").addEventListener("click", () => {
@@ -139,9 +146,7 @@ document.getElementById("startBtn").addEventListener("click", () => {
   if (flutterLogo.complete) {
     startGame();
   } else {
-    flutterLogo.onload = () => {
-      startGame();
-    };
+    flutterLogo.onload = () => startGame();
   }
 });
 
@@ -156,3 +161,8 @@ document.querySelectorAll(".ctrl").forEach(button => {
     }
   });
 });
+
+// ✅ Exports for unit testing
+if (typeof module !== 'undefined') {
+  module.exports = { moveSnake, growSnake, checkCollision };
+}
